@@ -487,6 +487,11 @@ money_movers:
   password: password
 
 # Working credentials, no need to replace
+myfatoorah:
+  some_credential: SOMECREDENTIAL
+  another_credential: ANOTHERCREDENTIAL
+
+# Working credentials, no need to replace
 nab_transact:
   login: ABC0001
   password: changeit

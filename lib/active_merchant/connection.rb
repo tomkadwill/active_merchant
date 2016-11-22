@@ -64,7 +64,46 @@ module ActiveMerchant
               http.get(endpoint.request_uri, headers)
             when :post
               debug body
-              http.post(endpoint.request_uri, body, RUBY_184_POST_HEADERS.merge(headers))
+
+              # TODO: fix this
+              url = URI("https://test.myfatoorah.com/pg/PayGatewayService.asmx?op=PaymentRequest" ) #SOAP url to be called from ruby client, change this url for other calls
+              http = Net::HTTP.new(url.host, url.port) #http post start
+              http.use_ssl = true
+              http.verify_mode = OpenSSL::SSL::VERIFY_NONE #setting ssl request
+              header = { "Content-Type" => 'application/soap+xml; charset=utf-8' } #set headers, you can additional header attributes here as per requirement
+              request = Net::HTTP::Post.new(url, header) #creating post request
+
+              data = <<-EOF
+              <?xml version="1.0" encoding="utf-8"?>
+              <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+              <soap12:Body>
+              <PaymentRequest xmlns="http://tempuri.org/">
+              <req> <CustomerDC>
+              <Name>string</Name> <Email>string</Email> <Mobile>string</Mobile> <Gender>string</Gender> <DOB>string</DOB> <civil_id>string</civil_id> <Area>string</Area> <Block>string</Block> <Street>string</Street> <Avenue>string</Avenue> <Building>string</Building> <Floor>string</Floor> <Apartment>string</Apartment>
+              </CustomerDC> <MerchantDC>
+              <merchant_code>999999</merchant_code> <merchant_username>testapi@myfatoorah.com</merchant_username> <merchant_password>E55D0</merchant_password> <merchant_ReferenceID>201454542102</merchant_ReferenceID> <ReturnURL>http://example.com</ReturnURL> <merchant_error_url>string</merchant_error_url> <udf1>string</udf1>
+              <udf2>string</udf2> <udf3>string</udf3> <udf4>string</udf4> <udf5>string</udf5>
+              </MerchantDC> <lstProductDC> <ProductDC>
+              <product_name>example_product_name</product_name> <unitPrice>100.2</unitPrice>
+              <qty>3</qty>
+              MYFATOORAH
+              </ProductDC> <ProductDC>
+              <product_name>example_product_name_2</product_name> <unitPrice>200.50</unitPrice>
+              <qty>4</qty>
+              </ProductDC> </lstProductDC>
+              </req> </PaymentRequest>
+              </soap12:Body>
+              </soap12:Envelope>
+              EOF
+
+              request.body = data #attaching data to post request for soap call
+              response = http.request(request) #sending actual request
+              response.read_body
+
+
+
+
+              # http.post(endpoint.request_uri, body, RUBY_184_POST_HEADERS.merge(headers))
             when :put
               debug body
               http.put(endpoint.request_uri, body, headers)
@@ -82,8 +121,9 @@ module ActiveMerchant
             end
           end
 
-          info "--> %d %s (%d %.4fs)" % [result.code, result.message, result.body ? result.body.length : 0, realtime], tag
-          debug result.body
+          # TODO: put this back in
+          # info "--> %d %s (%d %.4fs)" % [result.code, result.message, result.body ? result.body.length : 0, realtime], tag
+          # debug result.body
           result
         end
       end

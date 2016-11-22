@@ -72,12 +72,14 @@ module ActiveMerchant #:nodoc:
     end
 
     def handle_response(response)
-      case response.code.to_i
-      when 200...300
-        response.body
-      else
-        raise ResponseError.new(response)
-      end
+      # case response.code.to_i
+      # when 200...300
+      #   response.body
+      # else
+      #   raise ResponseError.new(response)
+      # end
+      # TODO: put this back in
+      response
     end
 
   end
